@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  username  String    @unique
+  password  String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  monitors  Monitor[]
+  planId    String
+  plan      Plan     @relation(fields: [planId], references: [id])
+
+  @@index([username])
+}
+
+model Plan {
+  id String @id @default(uuid())
+  name String @db.VarChar(255)
+  price Int
+  features String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users User[]
+  @@index([name])
+}
+
+model Monitor {
+  id             String   @id @default(uuid())
+  userId         String
+  name           String   @db.VarChar(255)
+  url            String   @db.VarChar(255)
+  method         String   @db.VarChar(255)
+  interval       Int
+  expectedStatus Int
+  timeout        Int      @default(30)
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now()) @db.Timestamp(3)
+  updatedAt      DateTime @updatedAt @db.Timestamp(3)
+  user           User     @relation(fields: [userId], references: [id])
+  checks         Check[]
+  incidents      Incident[]
+  @@index([userId])
+}
+
+model Check {
+  id           String   @id @default(uuid())
+  monitorId    String
+  status       String   @db.VarChar(255)
+  statusCode   Int      @db.Integer
+  responseTime Int
+  error        String   @db.VarChar(255)
+  checkedAt    DateTime @default(now()) @db.Timestamp(3)
+  monitor      Monitor  @relation(fields: [monitorId], references: [id])
+  @@index([monitorId])
+}
+
+model Incident {
+  id String @id @default(uuid())
+  monitorId    String
+  startedAt    DateTime @default(now()) @db.Timestamp(3)
+  resolvedAt   DateTime @db.Timestamp(3)
+  reason       String   @db.VarChar(255) @default("Unknown")
+  status       String   @db.VarChar(255) @default("open") 
+  monitor      Monitor  @relation(fields: [monitorId], references: [id])
+  @@index([monitorId])
+}
