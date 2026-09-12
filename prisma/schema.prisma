@@ -13,22 +13,22 @@ datasource db {
 }
 
 model User {
-   id            String    @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
 
-  username      String?   @unique
-  password      String?
+  username String? @unique
+  password String?
 
-  accounts      Account[]
-  sessions      Session[]
-  monitors      Monitor[]
- 
+  accounts Account[]
+  sessions Session[]
+  monitors Monitor[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([username])
 }
 
@@ -74,6 +74,8 @@ model Monitor {
   name           String     @db.VarChar(255)
   url            String     @db.VarChar(255)
   method         String     @db.VarChar(255)
+  headers        Json?
+  body           Json?
   interval       Int
   expectedStatus Int
   timeout        Int        @default(30)
