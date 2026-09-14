@@ -40,7 +40,10 @@ export function TopNav({ user }: { user?: TopNavUser | null }) {
 
       <nav className="flex items-center gap-1 rounded-full bg-white p-1 dark:bg-card">
         {NAV_LINKS.map((link) => {
-          const isActive = pathname === link.href
+          const isActive =
+            link.href === "/dashboard"
+              ? pathname === link.href
+              : pathname === link.href || pathname.startsWith(`${link.href}/`)
 
           return (
             <Link
@@ -63,7 +66,7 @@ export function TopNav({ user }: { user?: TopNavUser | null }) {
         <Button
           variant="ghost"
           size="icon"
-          className="h-11 w-11 rounded-full bg-white shadow-sm hover:bg-neutral-100"
+          className="h-11 w-11 rounded-full shadow-sm hover:bg-neutral-100"
         >
           <Search className="h-4 w-4" />
           <span className="sr-only">Search</span>
@@ -72,7 +75,7 @@ export function TopNav({ user }: { user?: TopNavUser | null }) {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-11 w-11 rounded-full bg-white shadow-sm hover:bg-neutral-100"
+          className="relative h-11 w-11 rounded-full shadow-sm hover:bg-neutral-100"
         >
           <Bell className="h-4 w-4" />
           <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-rose-500" />
