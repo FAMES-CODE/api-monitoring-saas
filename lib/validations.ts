@@ -19,4 +19,6 @@ export const createMonitorSchema = z.object({
 })
 
 
-export const updateMonitorSchema = createMonitorSchema.partial()
+export const updateMonitorSchema = createMonitorSchema.partial().extend({
+  enabled: z.boolean().optional(),
+})
