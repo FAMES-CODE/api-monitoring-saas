@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { updateMonitorSchema } from "@/lib/validations"
+import type { Prisma } from "@/lib/generated/prisma/client"
 
 export async function GET(
   _request: Request,
@@ -20,6 +21,16 @@ export async function GET(
       where: {
         userId: session.user.id,
         id,
+      },
+      include: {
+        checks: {
+          orderBy: { checkedAt: "desc" },
+          take: 50,
+        },
+        incidents: {
+          orderBy: { startedAt: "desc" },
+          take: 20,
+        },
       },
     })
 
@@ -77,11 +88,19 @@ export async function PATCH(
       )
     }
 
+    const { body: requestBody, ...fields } = result.data
+
     const monitor = await prisma.monitor.update({
       where: {
         id: existingMonitor.id,
       },
-      data: result.data,
+      data: {
+        ...fields,
+        body:
+          requestBody === undefined
+            ? undefined
+            : (requestBody as Prisma.InputJsonValue),
+      },
     })
 
     return NextResponse.json(monitor)

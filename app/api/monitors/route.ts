@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { createMonitorSchema } from "@/lib/validations"
+import type { Prisma } from "@/lib/generated/prisma/client"
 
 export async function POST(request: Request) {
   try {
@@ -29,9 +30,15 @@ export async function POST(request: Request) {
     }
 
     // Create monitor
+    const { body: requestBody, ...fields } = result.data
+
     const monitor = await prisma.monitor.create({
       data: {
-        ...result.data,
+        ...fields,
+        body:
+          requestBody === undefined
+            ? undefined
+            : (requestBody as Prisma.InputJsonValue),
         userId: session.user.id,
       },
     })
