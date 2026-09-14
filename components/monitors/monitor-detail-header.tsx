@@ -64,6 +64,13 @@ export function MonitorDetailHeader({ monitor }: { monitor: MonitorDetail }) {
       <div className="flex gap-2">
         <Button
           variant="outline"
+          render={<Link href={`/monitors/${monitor.id}/edit`} />}
+          nativeButton={false}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="outline"
           onClick={toggleEnabled}
           disabled={pending}
         >

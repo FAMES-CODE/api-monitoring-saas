@@ -15,7 +15,7 @@ export const createMonitorSchema = z.object({
 
   headers: z.record(z.string(), z.string()).optional(),
 
-  body: z.unknown().optional(),
+  body: z.unknown().nullable().optional(),
 })
 
 

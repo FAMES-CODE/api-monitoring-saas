@@ -47,16 +47,67 @@ const INITIAL_STATE: MonitorFormState = {
   headers: [{ id: "header-1", key: "", value: "" }],
 }
 
+export type MonitorFormValues = {
+  name: string
+  url: string
+  method: string
+  expectedStatus: number
+  interval: number
+  timeout: number
+  headers: Record<string, string>
+  body: unknown
+}
+
+function toFormState(values?: MonitorFormValues): MonitorFormState {
+  if (!values) return INITIAL_STATE
+
+  const method = METHODS.includes(values.method as (typeof METHODS)[number])
+    ? (values.method as (typeof METHODS)[number])
+    : "GET"
+  const headerEntries = Object.entries(values.headers)
+
+  return {
+    name: values.name,
+    url: values.url,
+    method,
+    expectedStatus: String(values.expectedStatus),
+    interval: String(values.interval),
+    timeout: String(values.timeout),
+    body:
+      values.body === null || values.body === undefined
+        ? ""
+        : typeof values.body === "string"
+          ? values.body
+          : JSON.stringify(values.body, null, 2),
+    headers:
+      headerEntries.length > 0
+        ? headerEntries.map(([key, value], index) => ({
+            id: `header-${index}`,
+            key,
+            value,
+          }))
+        : [{ id: "header-1", key: "", value: "" }],
+  }
+}
+
 export function MonitorForm({
+  initialValues,
   onSubmit,
   isSubmitting,
   error,
+  submitLabel = "Create monitor",
+  submittingLabel = "Creating…",
 }: {
+  initialValues?: MonitorFormValues
   onSubmit: (payload: Record<string, unknown>) => Promise<void>
   isSubmitting: boolean
   error: string | null
+  submitLabel?: string
+  submittingLabel?: string
 }) {
-  const [form, setForm] = useState<MonitorFormState>(INITIAL_STATE)
+  const [form, setForm] = useState<MonitorFormState>(() =>
+    toFormState(initialValues)
+  )
 
   function update<K extends keyof MonitorFormState>(
     key: K,
@@ -99,8 +150,8 @@ export function MonitorForm({
       expectedStatus: Number(form.expectedStatus),
       interval: Number(form.interval),
       timeout: Number(form.timeout),
-      headers: Object.keys(headers).length > 0 ? headers : undefined,
-      body,
+      headers,
+      body: body ?? null,
     })
   }
 
@@ -282,7 +333,7 @@ export function MonitorForm({
 
       <div className="flex justify-end">
         <Button type="submit" size="lg" disabled={isSubmitting}>
-          {isSubmitting ? "Creating…" : "Create monitor"}
+          {isSubmitting ? submittingLabel : submitLabel}
         </Button>
       </div>
     </form>

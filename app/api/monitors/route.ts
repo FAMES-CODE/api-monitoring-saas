@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       data: {
         ...fields,
         body:
-          requestBody === undefined
+          requestBody === undefined || requestBody === null
             ? undefined
             : (requestBody as Prisma.InputJsonValue),
         userId: session.user.id,

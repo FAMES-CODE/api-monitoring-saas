@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { updateMonitorSchema } from "@/lib/validations"
-import type { Prisma } from "@/lib/generated/prisma/client"
+import { Prisma } from "@/lib/generated/prisma/client"
 
 export async function GET(
   _request: Request,
@@ -99,7 +99,9 @@ export async function PATCH(
         body:
           requestBody === undefined
             ? undefined
-            : (requestBody as Prisma.InputJsonValue),
+            : requestBody === null
+              ? Prisma.DbNull
+              : (requestBody as Prisma.InputJsonValue),
       },
     })
 

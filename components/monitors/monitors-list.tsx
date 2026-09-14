@@ -126,6 +126,11 @@ export function MonitorsList({ monitors }: { monitors: MonitorListItem[] }) {
                       Access details
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      onClick={() => router.push(`/monitors/${monitor.id}/edit`)}
+                    >
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
                       onClick={() => patchEnabled(monitor.id, !monitor.enabled)}
                     >
                       {monitor.enabled ? "Disable" : "Enable"}
