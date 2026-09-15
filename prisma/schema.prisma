@@ -12,6 +12,17 @@ datasource db {
   provider = "postgresql"
 }
 
+enum MonitorStatus {
+  UNKNOWN
+  UP
+  DOWN
+}
+
+enum CheckStatus {
+  SUCCESS
+  FAILED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -69,20 +80,21 @@ model VerificationToken {
 }
 
 model Monitor {
-  id             String     @id @default(uuid())
+  id             String        @id @default(uuid())
   userId         String
-  name           String     @db.VarChar(255)
-  url            String     @db.VarChar(255)
-  method         String     @db.VarChar(255)
+  name           String        @db.VarChar(255)
+  url            String        @db.VarChar(255)
+  method         String        @db.VarChar(255)
   headers        Json?
   body           Json?
   interval       Int
   expectedStatus Int
-  timeout        Int        @default(30)
-  enabled        Boolean    @default(true)
-  createdAt      DateTime   @default(now()) @db.Timestamp(3)
-  updatedAt      DateTime   @updatedAt @db.Timestamp(3)
-  user           User       @relation(fields: [userId], references: [id])
+  timeout        Int           @default(30000)
+  enabled        Boolean       @default(true)
+  status         MonitorStatus @default(UNKNOWN)
+  createdAt      DateTime      @default(now()) @db.Timestamp(3)
+  updatedAt      DateTime      @updatedAt @db.Timestamp(3)
+  user           User          @relation(fields: [userId], references: [id])
   checks         Check[]
   incidents      Incident[]
 
@@ -90,14 +102,14 @@ model Monitor {
 }
 
 model Check {
-  id           String   @id @default(uuid())
+  id           String      @id @default(uuid())
   monitorId    String
-  status       String   @db.VarChar(255)
-  statusCode   Int      @db.Integer
+  status       CheckStatus
+  statusCode   Int?
   responseTime Int
-  error        String   @db.VarChar(255)
-  checkedAt    DateTime @default(now()) @db.Timestamp(3)
-  monitor      Monitor  @relation(fields: [monitorId], references: [id])
+  error        String?     @db.VarChar(255)
+  checkedAt    DateTime    @default(now()) @db.Timestamp(3)
+  monitor      Monitor     @relation(fields: [monitorId], references: [id])
 
   @@index([monitorId])
 }
