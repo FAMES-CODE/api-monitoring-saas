@@ -96,10 +96,9 @@ model Check {
 model Incident {
   id         String   @id @default(uuid())
   monitorId  String
+  status     IncidentStatus @default(OPEN)
   startedAt  DateTime @default(now())
-  resolvedAt DateTime
-  reason     String   @default("Unknown") @db.VarChar(255)
-  status     String   @default("open") @db.VarChar(255)
+  resolvedAt DateTime?
   monitor    Monitor  @relation(fields: [monitorId], references: [id])
 
   @@index([monitorId])
@@ -114,4 +113,9 @@ enum MonitorStatus {
 enum CheckStatus {
   SUCCESS
   FAILED
+}
+
+enum IncidentStatus {
+  OPEN
+  RESOLVED
 }

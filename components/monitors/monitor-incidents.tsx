@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { IncidentStatus } from "@/lib/generated/prisma/enums"
 import type { MonitorIncidentItem } from "@/lib/monitors"
 
 export function MonitorIncidents({
@@ -37,7 +38,6 @@ export function MonitorIncidents({
                 <TableHead>Started</TableHead>
                 <TableHead>Resolved</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Reason</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -54,14 +54,15 @@ export function MonitorIncidents({
                   <TableCell>
                     <Badge
                       variant={
-                        incident.status === "open" ? "destructive" : "secondary"
+                        incident.status === IncidentStatus.OPEN
+                          ? "destructive"
+                          : "secondary"
                       }
                       className="rounded-full"
                     >
                       {incident.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>{incident.reason}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

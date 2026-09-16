@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import type { Prisma } from "@/lib/generated/prisma/client"
+import { IncidentStatus, type Prisma } from "@/lib/generated/prisma/client"
 
 export type MonitorHealthStatus = "up" | "down" | "pending" | "paused"
 
@@ -37,8 +37,7 @@ export type MonitorIncidentItem = {
   id: string
   startedAt: string
   resolvedAt: string | null
-  reason: string
-  status: string
+  status: IncidentStatus
 }
 
 export type MonitorDetail = MonitorListItem & {
@@ -65,7 +64,7 @@ function jsonToRecord(value: Prisma.JsonValue | null): Record<string, string> {
 
 export function getMonitorHealth(
   enabled: boolean,
-  lastCheck: { status: string; statusCode: number } | null,
+  lastCheck: { status: string; statusCode: number | null } | null,
   expectedStatus: number
 ): MonitorHealthStatus {
   if (!enabled) return "paused"
@@ -85,17 +84,17 @@ export function getMonitorHealth(
 function serializeCheck(check: {
   id: string
   status: string
-  statusCode: number
+  statusCode: number | null
   responseTime: number
-  error: string
+  error: string | null
   checkedAt: Date
 }): MonitorCheckItem {
   return {
     id: check.id,
     status: check.status,
-    statusCode: check.statusCode,
+    statusCode: check.statusCode ?? 0,
     responseTime: check.responseTime,
-    error: check.error,
+    error: check.error ?? "",
     checkedAt: check.checkedAt.toISOString(),
   }
 }
@@ -112,7 +111,7 @@ export async function getMonitorsForUser(userId: string): Promise<MonitorListIte
       _count: {
         select: {
           incidents: {
-            where: { status: "open" },
+            where: { status: IncidentStatus.OPEN },
           },
         },
       },
@@ -135,7 +134,7 @@ export async function getMonitorsForUser(userId: string): Promise<MonitorListIte
       lastCheck: lastCheck
         ? {
             status: lastCheck.status,
-            statusCode: lastCheck.statusCode,
+            statusCode: lastCheck.statusCode ?? 0,
             responseTime: lastCheck.responseTime,
             checkedAt: lastCheck.checkedAt.toISOString(),
           }
@@ -206,22 +205,20 @@ export async function getMonitorDetailForUser(
     lastCheck: lastCheck
       ? {
           status: lastCheck.status,
-          statusCode: lastCheck.statusCode,
-          responseTime: lastCheck.responseTime,
-          checkedAt: lastCheck.checkedAt.toISOString(),
-        }
-      : null,
+            statusCode: lastCheck.statusCode ?? 0,
+            responseTime: lastCheck.responseTime,
+            checkedAt: lastCheck.checkedAt.toISOString(),
+          }
+        : null,
     openIncidentCount: monitor.incidents.filter(
-      (incident) => incident.status === "open"
+      (incident) => incident.status === IncidentStatus.OPEN
     ).length,
     health: getMonitorHealth(monitor.enabled, lastCheck, monitor.expectedStatus),
     checks: monitor.checks.map(serializeCheck),
     incidents: monitor.incidents.map((incident) => ({
       id: incident.id,
       startedAt: incident.startedAt.toISOString(),
-      resolvedAt:
-        incident.status === "open" ? null : incident.resolvedAt.toISOString(),
-      reason: incident.reason,
+      resolvedAt: incident.resolvedAt?.toISOString() ?? null,
       status: incident.status,
     })),
     uptimePercent,
