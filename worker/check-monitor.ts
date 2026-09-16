@@ -49,7 +49,6 @@ export async function checkMonitor(monitorId: string) {
     if (response.status === monitor.expectedStatus) {
       status = "SUCCESS"
     } else {
-      status = "FAILED"
       error = `Expected status ${monitor.expectedStatus}, received ${response.status}`
     }
   } catch (err) {
@@ -74,6 +73,84 @@ export async function checkMonitor(monitorId: string) {
       error,
     },
   })
+
+  // Get the last 3 checks
+  const recentChecks = await prisma.check.findMany({
+    where: {
+      monitorId: monitor.id,
+    },
+    orderBy: {
+      checkedAt: "desc",
+    },
+    take: 3,
+  })
+
+  const hasThreeConsecutiveFailures =
+    recentChecks.length === 3 &&
+    recentChecks.every((check) => check.status === "FAILED")
+
+  if (status === "FAILED") {
+    await prisma.monitor.update({
+      where: {
+        id: monitor.id,
+      },
+      data: {
+        status: "DOWN",
+      },
+    })
+
+    if (hasThreeConsecutiveFailures) {
+      const openIncident = await prisma.incident.findFirst({
+        where: {
+          monitorId: monitor.id,
+          status: "OPEN",
+        },
+      })
+
+      if (!openIncident) {
+        await prisma.incident.create({
+          data: {
+            monitorId: monitor.id,
+            status: "OPEN",
+          },
+        })
+
+        console.log(`[Incident] Created for "${monitor.name}"`)
+      }
+    }
+  }
+
+  if (status === "SUCCESS") {
+    await prisma.monitor.update({
+      where: {
+        id: monitor.id,
+      },
+      data: {
+        status: "UP",
+      },
+    })
+
+    const openIncident = await prisma.incident.findFirst({
+      where: {
+        monitorId: monitor.id,
+        status: "OPEN",
+      },
+    })
+
+    if (openIncident) {
+      await prisma.incident.update({
+        where: {
+          id: openIncident.id,
+        },
+        data: {
+          status: "RESOLVED",
+          resolvedAt: new Date(),
+        },
+      })
+
+      console.log(`[Incident] Resolved for "${monitor.name}"`)
+    }
+  }
 
   return check
 }

@@ -173,9 +173,7 @@ export async function getMonitorDetailForUser(
 
   const lastCheck = monitor.checks[0] ?? null
   const successfulChecks = monitor.checks.filter(
-    (check) =>
-      check.statusCode === monitor.expectedStatus ||
-      ["up", "ok", "success"].includes(check.status.toLowerCase())
+    (check) => check.status === "SUCCESS"
   )
   const uptimePercent =
     monitor.checks.length === 0
