@@ -7,45 +7,49 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { formatResponseTime } from "@/lib/format"
+import type { DashboardStats } from "@/lib/dashboard"
 
-export type StatCard = {
-  label: string
-  value: string | number
-  footnote: string
-  tone?: "positive" | "neutral"
-}
+export function StatsCards({ stats }: { stats: DashboardStats }) {
+  const cards = [
+    {
+      label: "Total monitors",
+      value: stats.totalMonitors,
+      footnote:
+        stats.newThisWeek > 0
+          ? `${stats.newThisWeek} new this week`
+          : "No new monitors this week",
+      tone: "positive" as const,
+    },
+    {
+      label: "Monitors up",
+      value: stats.monitorsUp,
+      footnote:
+        stats.uptimePercent === null
+          ? "Waiting for first checks"
+          : `${stats.uptimePercent}% checks successful`,
+      tone: "positive" as const,
+    },
+    {
+      label: "Open incidents",
+      value: stats.openIncidents,
+      footnote:
+        stats.openIncidents > 0
+          ? `${stats.monitorsDown} monitor${stats.monitorsDown === 1 ? "" : "s"} down`
+          : "All clear",
+      tone: stats.openIncidents > 0 ? ("neutral" as const) : ("positive" as const),
+    },
+    {
+      label: "Avg. response time",
+      value: formatResponseTime(stats.avgResponseTime),
+      footnote: "From latest check of each monitor",
+      tone: "positive" as const,
+    },
+  ]
 
-const DEFAULT_STATS: StatCard[] = [
-  {
-    label: "Total monitors",
-    value: 5,
-    footnote: "1 new this week",
-    tone: "positive",
-  },
-  {
-    label: "Monitors up",
-    value: 4,
-    footnote: "80% uptime today",
-    tone: "positive",
-  },
-  {
-    label: "Open incidents",
-    value: 1,
-    footnote: "Acknowledged",
-    tone: "neutral",
-  },
-  {
-    label: "Avg. response time",
-    value: "212ms",
-    footnote: "18ms faster",
-    tone: "positive",
-  },
-]
-
-export function StatsCards({ stats = DEFAULT_STATS }: { stats?: StatCard[] }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => (
+      {cards.map((stat) => (
         <Card key={stat.label} className="rounded-3xl border-none shadow-sm">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-neutral-500 dark:text-foreground">

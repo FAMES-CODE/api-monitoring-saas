@@ -1,3 +1,5 @@
+import Link from "next/link"
+import { AlertTriangle, List, Plus } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -5,45 +7,54 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Icon, Plus } from "lucide-react"
 
-type QuickActions = {
-  name: string
-  description: string
-  icon: string
-}
-
-const ACTIONS: QuickActions[] = [
+const ACTIONS = [
   {
     name: "Create a monitor",
-    description: "Create an endpoint to monitor",
-    icon: "Plus",
+    description: "Watch a new HTTP endpoint",
+    href: "/monitors/new",
+    icon: Plus,
   },
-  { name: "View all", description: "View all your endpoint", icon: "Plus" },
+  {
+    name: "View all monitors",
+    description: "Open the full monitor list",
+    href: "/monitors",
+    icon: List,
+  },
   {
     name: "Check incidents",
-    description: "View all recent incidents",
-    icon: "Plus",
+    description: "Jump to failing endpoints",
+    href: "/monitors",
+    icon: AlertTriangle,
   },
-]
+] as const
 
-export function QuickActions({ action = ACTIONS }: { action?: QuickActions[] }) {
+export function QuickActions() {
   return (
     <Card className="rounded-3xl border-none shadow-sm">
       <CardHeader>
-        <CardTitle>Team activity</CardTitle>
-        <CardDescription>Incident resolution rate, last 7 days</CardDescription>
+        <CardTitle>Quick actions</CardTitle>
+        <CardDescription>Jump back into monitoring work</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-5">
-        {action.map((action) => (
-          <div key={action.name} className="flex items-center gap-3">
-            <Plus />
-            <div>
-              <h1 className="text-xl">{action.name}</h1>
-              <p className="text-neutral-500">{action.description}</p>
-            </div>
-          </div>
-        ))}
+      <CardContent className="space-y-3">
+        {ACTIONS.map((action) => {
+          const Icon = action.icon
+          return (
+            <Link
+              key={action.name}
+              href={action.href}
+              className="flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-muted/40"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-neutral-100 dark:bg-muted">
+                <Icon className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="font-medium">{action.name}</p>
+                <p className="text-sm text-neutral-500">{action.description}</p>
+              </div>
+            </Link>
+          )
+        })}
       </CardContent>
     </Card>
   )
