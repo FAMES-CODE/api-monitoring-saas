@@ -3,6 +3,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { createMonitorSchema } from "@/lib/validations"
 import type { Prisma } from "@/lib/generated/prisma/client"
+import { getMonitorsForUser } from "@/lib/monitors"
 
 export async function POST(request: Request) {
   try {
@@ -63,14 +64,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const monitors = await prisma.monitor.findMany({
-      where: {
-        userId: session.user.id,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    })
+    const monitors = await getMonitorsForUser(session.user.id)
 
     return NextResponse.json(monitors)
   } catch (error) {
