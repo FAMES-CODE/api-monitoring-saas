@@ -31,9 +31,9 @@ const ACTIONS = [
 
 export function QuickActions() {
   return (
-    <Card className="rounded-3xl border-none shadow-sm">
+    <Card className="app-surface">
       <CardHeader>
-        <CardTitle>Quick actions</CardTitle>
+        <CardTitle className="font-bold">Quick actions</CardTitle>
         <CardDescription>Jump back into monitoring work</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -43,9 +43,9 @@ export function QuickActions() {
             <Link
               key={action.name}
               href={action.href}
-              className="flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-muted/40"
+              className="interactive-row flex items-center gap-3 rounded-xl p-2"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-neutral-100 dark:bg-muted">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Icon className="h-4 w-4" />
               </span>
               <div>

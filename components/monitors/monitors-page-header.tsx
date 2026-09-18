@@ -13,17 +13,18 @@ export function MonitorsPageHeader({
   actionLabel?: string
 }) {
   return (
-    <div className="mt-8 mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mt-6 mb-7 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        <p className="mt-1 text-sm text-neutral-500 dark:text-muted-foreground">
+        <p className="text-xs font-bold tracking-[0.14em] text-primary uppercase">Control center</p>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           {description}
         </p>
       </div>
       {actionHref && actionLabel ? (
         <Link
           href={actionHref}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-2xl bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-px hover:bg-primary/85"
         >
           <Plus className="size-4" />
           {actionLabel}

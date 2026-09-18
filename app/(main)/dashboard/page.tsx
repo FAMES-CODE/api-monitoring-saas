@@ -21,9 +21,21 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <p className="my-8 text-2xl font-semibold">
-        {greeting}, {displayName}
-      </p>
+      <div className="mt-6 mb-7 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-muted-foreground">Live system health</p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">
+            {greeting}, {displayName}
+          </h1>
+        </div>
+        <div className="app-surface flex items-center gap-2 px-3 py-2 text-xs font-medium text-muted-foreground">
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+          </span>
+          Live monitoring enabled
+        </div>
+      </div>
 
       <div className="mb-6">
         <StatsCards stats={dashboard.stats} />

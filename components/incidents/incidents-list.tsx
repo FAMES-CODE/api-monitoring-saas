@@ -29,7 +29,7 @@ export function IncidentsList({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-card">
+    <div className="app-surface overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -42,11 +42,11 @@ export function IncidentsList({
         </TableHeader>
         <TableBody>
           {incidents.map((incident) => (
-            <TableRow key={incident.id}>
+            <TableRow key={incident.id} className="interactive-row border-border/60">
               <TableCell>
                 <Link
                   href={`/monitors/${incident.monitorId}`}
-                  className="font-medium hover:underline"
+                  className="font-semibold hover:text-primary hover:underline"
                 >
                   {incident.monitorName}
                 </Link>

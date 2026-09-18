@@ -15,11 +15,11 @@ export default async function MainLayout({
   }
 
   return (
-    <div className="min-h-svh gap-6 bg-gradient-to-br from-rose-100 via-fuchsia-50 to-indigo-100 p-4 md:p-4 dark:bg-background dark:from-background dark:via-background dark:to-background">
-      <div className="flex gap-6 p-4 md:p-8">
+    <div className="app-shell min-h-svh p-3 md:p-5">
+      <div className="mx-auto flex max-w-[1680px] gap-5">
         <SideRail />
 
-        <div className="flex-1 rounded-[2rem] p-6 md:p-4">
+        <div className="min-w-0 flex-1 pb-8 md:px-2">
           <TopNav user={session.user} />
           {children}
         </div>

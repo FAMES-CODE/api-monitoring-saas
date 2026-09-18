@@ -1,26 +1,18 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Activity, Bell, Search } from "lucide-react"
+import { Bell, ChevronDown, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import SignOut from "@/components/sign-out"
-import { cn } from "@/lib/utils"
-
-const NAV_LINKS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Monitors", href: "/monitors" },
-  { label: "Incidents", href: "/incidents" },
-  { label: "Settings", href: "/settings" },
-]
 
 type TopNavUser = {
   name?: string | null
@@ -31,42 +23,26 @@ type TopNavUser = {
 export function TopNav({ user }: { user?: TopNavUser | null }) {
   const pathname = usePathname()
   const initials = getInitials(user?.name, user?.email)
+  const pageTitle = pathname.startsWith("/monitors")
+    ? "Monitors"
+    : pathname.startsWith("/incidents")
+      ? "Incidents"
+      : "Overview"
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-neutral-900">
-        <Activity className="h-5 w-5 text-white" />
+    <header className="flex min-h-16 flex-wrap items-center justify-between gap-4 py-3">
+      <div>
+        <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+          Workspace / {pageTitle}
+        </p>
+        <p className="mt-1 text-lg font-bold tracking-tight md:hidden">Pulseboard</p>
       </div>
-
-      <nav className="flex items-center gap-1 rounded-full bg-white p-1 dark:bg-card">
-        {NAV_LINKS.map((link) => {
-          const isActive =
-            link.href === "/dashboard"
-              ? pathname === link.href
-              : pathname === link.href || pathname.startsWith(`${link.href}/`)
-
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "dark:bg-foreground dark:text-black"
-                  : "text-neutral-500 hover:text-neutral-900"
-              )}
-            >
-              {link.label}
-            </Link>
-          )
-        })}
-      </nav>
 
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
-          className="h-11 w-11 rounded-full shadow-sm hover:bg-neutral-100"
+          className="h-10 w-10 rounded-xl border border-border/80 bg-card shadow-sm hover:bg-accent"
         >
           <Search className="h-4 w-4" />
           <span className="sr-only">Search</span>
@@ -75,7 +51,7 @@ export function TopNav({ user }: { user?: TopNavUser | null }) {
         <Button
           variant="ghost"
           size="icon"
-          className="relative h-11 w-11 rounded-full shadow-sm hover:bg-neutral-100"
+          className="relative h-10 w-10 rounded-xl border border-border/80 bg-card shadow-sm hover:bg-accent"
         >
           <Bell className="h-4 w-4" />
           <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-rose-500" />
@@ -83,31 +59,38 @@ export function TopNav({ user }: { user?: TopNavUser | null }) {
         </Button>
 
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Avatar className="h-11 w-11">
+          <DropdownMenuTrigger className="flex items-center gap-2 rounded-xl border border-border/80 bg-card py-1 pr-2 pl-1 shadow-sm transition hover:bg-accent">
+            <Avatar className="h-8 w-8">
               <AvatarImage
                 src={user?.image ?? undefined}
                 alt={user?.name ?? "User"}
               />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
+            <span className="hidden max-w-28 truncate text-left text-xs font-semibold sm:block">
+              {user?.name ?? "My account"}
+            </span>
+            <ChevronDown className="hidden size-3.5 text-muted-foreground sm:block" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <p className="text-sm leading-none font-medium">
-                {user?.name ?? "My account"}
-              </p>
-              <p className="mt-1 truncate text-xs text-neutral-500">
-                {user?.email}
-              </p>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-
-            <div className="p-1">x</div>
+          <DropdownMenuContent align="end" className="w-60 p-2">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="px-2 py-2 font-normal">
+                <p className="text-sm leading-none font-semibold">
+                  {user?.name ?? "My account"}
+                </p>
+                <p className="mt-1.5 truncate text-xs text-muted-foreground">
+                  {user?.email}
+                </p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem disabled className="mt-1 text-muted-foreground">
+                Account settings coming soon
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </div>
+    </header>
   )
 }
 

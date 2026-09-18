@@ -81,10 +81,10 @@ export function ChartAreaInteractive({
   }, [data.series])
 
   return (
-    <Card className="rounded-3xl border-none pt-0 shadow-sm">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+    <Card className="app-surface pt-0">
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b border-border/70 py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
-          <CardTitle>Average response time</CardTitle>
+          <CardTitle className="font-bold">Average response time</CardTitle>
           <CardDescription>
             One line per monitor, {RANGE_LABELS[timeRange]}
           </CardDescription>
@@ -103,7 +103,7 @@ export function ChartAreaInteractive({
           }}
         >
           <SelectTrigger
-            className="w-[160px] rounded-lg sm:ml-auto"
+            className="w-[160px] rounded-xl border-border/80 bg-muted/50 sm:ml-auto"
             aria-label="Select a time range"
           >
             <SelectValue placeholder="Last 24 hours" />

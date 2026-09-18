@@ -16,9 +16,9 @@ export function MonitorHealth({
   incidents: DashboardIncident[]
 }) {
   return (
-    <Card className="rounded-3xl border-none shadow-sm">
+    <Card className="app-surface">
       <CardHeader>
-        <CardTitle>Recent incidents</CardTitle>
+        <CardTitle className="font-bold">Recent incidents</CardTitle>
         <CardDescription>Latest incidents across all monitors</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -29,7 +29,7 @@ export function MonitorHealth({
             <Link
               key={incident.id}
               href={`/monitors/${incident.monitorId}`}
-              className="block space-y-2 rounded-2xl transition-colors hover:bg-neutral-50 dark:hover:bg-muted/40"
+              className="interactive-row block space-y-2 rounded-xl p-2"
             >
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="font-medium">{incident.monitorName}</span>

@@ -63,14 +63,14 @@ export function IncidentsStats({ incidents }: { incidents: IncidentListItem[] })
   return (
     <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
-        <Card key={stat.label} className="rounded-3xl border-none shadow-sm">
+        <Card key={stat.label} className="app-surface gap-0 py-5 transition duration-200 hover:-translate-y-1 hover:shadow-lg">
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-neutral-500 dark:text-foreground">
+            <CardTitle className="text-xs font-bold tracking-[0.1em] text-muted-foreground uppercase">
               {stat.label}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-3xl font-semibold text-neutral-900 dark:text-foreground">
+            <span className="text-3xl font-bold tracking-tight">
               {stat.value}
             </span>
           </CardContent>
@@ -80,8 +80,8 @@ export function IncidentsStats({ incidents }: { incidents: IncidentListItem[] })
               className={cn(
                 "rounded-full border-none",
                 stat.tone === "positive"
-                  ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-50"
-                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-100"
+                  ? "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300"
+                  : "bg-amber-500/10 text-amber-700 hover:bg-amber-500/10 dark:text-amber-300"
               )}
             >
               {stat.footnote}

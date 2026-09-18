@@ -23,9 +23,9 @@ export function GetStarted({ monitors }: { monitors: MonitorListItem[] }) {
   const down = monitors.filter((monitor) => monitor.health === "down").length
 
   return (
-    <Card className="h-full rounded-3xl border-none shadow-sm">
+    <Card className="app-surface h-full">
       <CardHeader>
-        <CardTitle>Your monitors</CardTitle>
+        <CardTitle className="font-bold">Your monitors</CardTitle>
         <CardDescription>
           {monitors.length === 0
             ? "No monitors yet"

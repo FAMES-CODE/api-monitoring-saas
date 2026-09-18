@@ -31,7 +31,7 @@ export function MonitorsToolbar({
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder="Search by name or URL"
-          className="h-10 w-full rounded-2xl border border-transparent bg-white pr-3 pl-10 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 dark:bg-card"
+          className="h-11 w-full rounded-xl border border-border/80 bg-card pr-3 pl-10 text-sm shadow-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
         />
       </label>
       <Select
@@ -40,7 +40,7 @@ export function MonitorsToolbar({
           if (value) onFilterChange(value as MonitorFilter)
         }}
       >
-        <SelectTrigger className="h-10 w-full rounded-2xl bg-white shadow-sm sm:w-44 dark:bg-card">
+        <SelectTrigger className="h-11 w-full rounded-xl border-border/80 bg-card shadow-sm sm:w-44">
           <SelectValue placeholder="Filter" />
         </SelectTrigger>
         <SelectContent>

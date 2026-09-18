@@ -74,7 +74,7 @@ export function MonitorsList({ monitors }: { monitors: MonitorListItem[] }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-card">
+    <div className="app-surface overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -88,11 +88,11 @@ export function MonitorsList({ monitors }: { monitors: MonitorListItem[] }) {
         </TableHeader>
         <TableBody>
           {monitors.map((monitor) => (
-            <TableRow key={monitor.id}>
+            <TableRow key={monitor.id} className="interactive-row border-border/60">
               <TableCell className="px-4">
                 <Link
                   href={`/monitors/${monitor.id}`}
-                  className="font-medium hover:underline"
+                  className="font-semibold hover:text-primary hover:underline"
                 >
                   {monitor.name}
                 </Link>
@@ -100,7 +100,7 @@ export function MonitorsList({ monitors }: { monitors: MonitorListItem[] }) {
                   {monitor.url}
                 </p>
               </TableCell>
-              <TableCell className="font-mono text-xs">{monitor.method}</TableCell>
+              <TableCell><span className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] font-semibold">{monitor.method}</span></TableCell>
               <TableCell>
                 <MonitorStatusBadge status={monitor.health} />
               </TableCell>
