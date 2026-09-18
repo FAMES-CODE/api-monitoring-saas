@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Noto_Sans, Playfair_Display, Inter, Roboto_Slab } from "next/font/google"
+import { Geist_Mono, Inter, Roboto_Slab } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
