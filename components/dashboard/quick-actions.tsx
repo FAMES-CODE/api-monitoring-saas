@@ -24,7 +24,7 @@ const ACTIONS = [
   {
     name: "Check incidents",
     description: "Jump to failing endpoints",
-    href: "/monitors",
+    href: "/incidents",
     icon: AlertTriangle,
   },
 ] as const
