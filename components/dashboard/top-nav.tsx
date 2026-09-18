@@ -35,7 +35,9 @@ export function TopNav({ user }: { user?: TopNavUser | null }) {
         <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
           Workspace / {pageTitle}
         </p>
-        <p className="mt-1 text-lg font-bold tracking-tight md:hidden">Pulseboard</p>
+        <p className="mt-1 text-lg font-bold tracking-tight md:hidden">
+          Pulse-API
+        </p>
       </div>
 
       <div className="flex items-center gap-2">

@@ -34,7 +34,9 @@ export function SideRail() {
           <Activity className="size-5" />
         </span>
         <span>
-          <span className="block text-sm font-bold tracking-tight">Pulseboard</span>
+          <span className="block text-sm font-bold tracking-tight">
+            Pulse-API
+          </span>
           <span className="block text-[11px] font-medium text-sidebar-foreground/50">
             Uptime intelligence
           </span>
@@ -86,13 +88,23 @@ export function SideRail() {
           <button
             type="button"
             title="Toggle color theme"
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            onClick={() =>
+              setTheme(resolvedTheme === "dark" ? "light" : "dark")
+            }
             className="flex size-9 items-center justify-center rounded-xl text-sidebar-foreground/60 transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           >
-            {resolvedTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            {resolvedTheme === "dark" ? (
+              <Sun className="size-4" />
+            ) : (
+              <Moon className="size-4" />
+            )}
             <span className="sr-only">Toggle color theme</span>
           </button>
-          <button type="button" title="Help center" className="flex size-9 items-center justify-center rounded-xl text-sidebar-foreground/60 transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+          <button
+            type="button"
+            title="Help center"
+            className="flex size-9 items-center justify-center rounded-xl text-sidebar-foreground/60 transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
             <CircleHelp className="size-4" />
             <span className="sr-only">Help center</span>
           </button>

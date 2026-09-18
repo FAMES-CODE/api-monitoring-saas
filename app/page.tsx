@@ -14,19 +14,28 @@ export default function Page() {
                 <Activity className="size-5" />
               </span>
               <div>
-                <p className="font-bold tracking-tight">Pulseboard</p>
+                <p className="font-bold tracking-tight">Pulse-API</p>
                 <p className="text-xs text-white/50">Uptime intelligence</p>
               </div>
             </div>
 
             <div className="my-auto max-w-xl py-12">
-              <p className="mb-4 text-xs font-bold tracking-[0.16em] text-primary uppercase">Monitoring, simplified</p>
-              <h1 className="text-4xl font-bold tracking-tight text-balance sm:text-6xl">See problems before your users do.</h1>
+              <p className="mb-4 text-xs font-bold tracking-[0.16em] text-primary uppercase">
+                Monitoring, simplified
+              </p>
+              <h1 className="text-4xl font-bold tracking-tight text-balance sm:text-6xl">
+                See problems before your users do.
+              </h1>
               <p className="mt-5 max-w-lg text-base leading-relaxed text-white/65 sm:text-lg">
-                Keep every endpoint reliable with a focused, real-time view of uptime, incidents, and response times.
+                Keep every endpoint reliable with a focused, real-time view of
+                uptime, incidents, and response times.
               </p>
               <div className="mt-9 grid gap-3 text-sm text-white/75 sm:grid-cols-3">
-                {["Continuous checks", "Instant incident history", "Clear response trends"].map((item) => (
+                {[
+                  "Continuous checks",
+                  "Instant incident history",
+                  "Clear response trends",
+                ].map((item) => (
                   <span key={item} className="flex items-center gap-2">
                     <Check className="size-4 text-emerald-300" />
                     {item}
@@ -44,13 +53,18 @@ export default function Page() {
 
         <div className="flex items-center border-t border-white/10 bg-black/10 p-7 sm:p-11 lg:border-t-0 lg:border-l">
           <div className="w-full max-w-sm">
-            <span className="mb-6 grid size-11 place-items-center rounded-xl bg-white/10 text-primary"><Zap className="size-5" /></span>
+            <span className="mb-6 grid size-11 place-items-center rounded-xl bg-white/10 text-primary">
+              <Zap className="size-5" />
+            </span>
             <h2 className="text-2xl font-bold tracking-tight">Welcome back</h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/55">Sign in to access your monitoring workspace.</p>
+            <p className="mt-2 text-sm leading-relaxed text-white/55">
+              Sign in to access your monitoring workspace.
+            </p>
             <div className="my-7 h-px bg-white/10" />
             <SignIn />
             <p className="mt-5 flex items-center justify-center gap-1 text-center text-xs text-white/40">
-              Your endpoints deserve a pulse. <ArrowUpRight className="size-3" />
+              Your endpoints deserve a pulse.{" "}
+              <ArrowUpRight className="size-3" />
             </p>
           </div>
         </div>
