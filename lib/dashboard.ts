@@ -5,11 +5,22 @@ import {
 } from "@/lib/generated/prisma/client"
 import { getMonitorsForUser, type MonitorListItem } from "@/lib/monitors"
 
+export type ChartTimeRange = "24h" | "7d" | "30d" | "90d"
+
 export type DashboardChartPoint = {
   date: string
-  avgResponseTime: number
-  successCount: number
-  failedCount: number
+  [monitorId: string]: string | number | null
+}
+
+export type DashboardChartSeriesMeta = {
+  id: string
+  key: string
+  name: string
+}
+
+export type DashboardChartSeries = {
+  series: DashboardChartSeriesMeta[]
+  ranges: Record<ChartTimeRange, DashboardChartPoint[]>
 }
 
 export type DashboardIncident = {
@@ -34,13 +45,84 @@ export type DashboardStats = {
 
 export type DashboardData = {
   stats: DashboardStats
-  chart: DashboardChartPoint[]
+  chart: DashboardChartSeries
   incidents: DashboardIncident[]
   monitors: MonitorListItem[]
 }
 
-function dayKey(date: Date): string {
-  return date.toISOString().slice(0, 10)
+const EMPTY_CHART: DashboardChartSeries = {
+  series: [],
+  ranges: {
+    "24h": [],
+    "7d": [],
+    "30d": [],
+    "90d": [],
+  },
+}
+
+const HOUR_MS = 60 * 60 * 1000
+const DAY_MS = 24 * HOUR_MS
+
+function startOfHourUTC(date: Date): Date {
+  const next = new Date(date)
+  next.setUTCMinutes(0, 0, 0)
+  return next
+}
+
+function startOfDayUTC(date: Date): Date {
+  const next = new Date(date)
+  next.setUTCHours(0, 0, 0, 0)
+  return next
+}
+
+function buildMonitorSeries(
+  checks: Array<{
+    monitorId: string
+    responseTime: number
+    checkedAt: Date
+  }>,
+  monitorIds: string[],
+  rangeStart: Date,
+  rangeEnd: Date,
+  stepMs: number,
+  align: (date: Date) => Date
+): DashboardChartPoint[] {
+  const alignedStart = align(rangeStart)
+  const buckets = new Map<string, Map<string, { total: number; count: number }>>()
+
+  for (
+    let timestamp = alignedStart.getTime();
+    timestamp <= rangeEnd.getTime();
+    timestamp += stepMs
+  ) {
+    buckets.set(new Date(timestamp).toISOString(), new Map())
+  }
+
+  for (const check of checks) {
+    if (check.checkedAt < alignedStart || check.checkedAt > rangeEnd) continue
+
+    const key = align(check.checkedAt).toISOString()
+    const bucket = buckets.get(key)
+    if (!bucket) continue
+
+    const monitorStats = bucket.get(check.monitorId) ?? { total: 0, count: 0 }
+    monitorStats.total += check.responseTime
+    monitorStats.count += 1
+    bucket.set(check.monitorId, monitorStats)
+  }
+
+  return [...buckets.entries()].map(([date, byMonitor]) => {
+    const point: DashboardChartPoint = { date }
+
+    for (const monitorId of monitorIds) {
+      const stats = byMonitor.get(monitorId)
+      const seriesKey = `m_${monitorId.replaceAll("-", "")}`
+      point[seriesKey] =
+        stats && stats.count > 0 ? Math.round(stats.total / stats.count) : null
+    }
+
+    return point
+  })
 }
 
 export async function getDashboardDataForUser(
@@ -66,7 +148,7 @@ export async function getDashboardDataForUser(
         newThisWeek: 0,
         uptimePercent: null,
       },
-      chart: [],
+      chart: EMPTY_CHART,
       incidents: [],
       monitors: [],
     }
@@ -99,34 +181,48 @@ export async function getDashboardDataForUser(
     }),
   ])
 
-  const byDay = new Map<
-    string,
-    { totalMs: number; success: number; failed: number }
-  >()
-
-  for (const check of checks) {
-    const key = dayKey(check.checkedAt)
-    const bucket = byDay.get(key) ?? { totalMs: 0, success: 0, failed: 0 }
-    bucket.totalMs += check.responseTime
-    if (check.status === CheckStatus.SUCCESS) {
-      bucket.success += 1
-    } else {
-      bucket.failed += 1
-    }
-    byDay.set(key, bucket)
+  const now = new Date()
+  const chart: DashboardChartSeries = {
+    series: monitors.map((monitor) => ({
+      id: monitor.id,
+      key: `m_${monitor.id.replaceAll("-", "")}`,
+      name: monitor.name,
+    })),
+    ranges: {
+      "24h": buildMonitorSeries(
+        checks,
+        monitorIds,
+        new Date(now.getTime() - 24 * HOUR_MS),
+        now,
+        HOUR_MS,
+        startOfHourUTC
+      ),
+      "7d": buildMonitorSeries(
+        checks,
+        monitorIds,
+        new Date(now.getTime() - 7 * DAY_MS),
+        now,
+        HOUR_MS,
+        startOfHourUTC
+      ),
+      "30d": buildMonitorSeries(
+        checks,
+        monitorIds,
+        new Date(now.getTime() - 30 * DAY_MS),
+        now,
+        DAY_MS,
+        startOfDayUTC
+      ),
+      "90d": buildMonitorSeries(
+        checks,
+        monitorIds,
+        new Date(now.getTime() - 90 * DAY_MS),
+        now,
+        DAY_MS,
+        startOfDayUTC
+      ),
+    },
   }
-
-  const chart: DashboardChartPoint[] = [...byDay.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, bucket]) => {
-      const count = bucket.success + bucket.failed
-      return {
-        date,
-        avgResponseTime: count === 0 ? 0 : Math.round(bucket.totalMs / count),
-        successCount: bucket.success,
-        failedCount: bucket.failed,
-      }
-    })
 
   const latestFailedByMonitor = new Map<string, number | null>()
   for (const check of checks) {
