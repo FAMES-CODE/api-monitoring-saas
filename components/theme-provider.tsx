@@ -7,6 +7,14 @@ function ThemeProvider({
   children,
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
+  // next-themes injects an inline <script> to avoid a theme flash.
+  // React 19.2 warns about script tags in client components; on the client
+  // we mark it as JSON so React will not treat it as executable JS.
+  const scriptProps =
+    typeof window === "undefined"
+      ? undefined
+      : ({ type: "application/json" } as const)
+
   return (
     <NextThemesProvider
       attribute="class"
@@ -14,6 +22,7 @@ function ThemeProvider({
       enableSystem
       disableTransitionOnChange
       {...props}
+      scriptProps={scriptProps}
     >
       <ThemeHotkey />
       {children}

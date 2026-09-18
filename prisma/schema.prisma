@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -13,22 +8,19 @@ datasource db {
 }
 
 model User {
-   id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-
+  id            String    @id @default(cuid())
   username      String?   @unique
   password      String?
-
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  email         String?   @unique
+  name          String?
+  emailVerified DateTime?
+  image         String?
   accounts      Account[]
-  sessions      Session[]
   monitors      Monitor[]
- 
+  sessions      Session[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
   @@index([username])
 }
 
@@ -38,15 +30,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -56,8 +47,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -69,33 +59,36 @@ model VerificationToken {
 }
 
 model Monitor {
-  id             String     @id @default(uuid())
+  id             String        @id @default(uuid())
   userId         String
-  name           String     @db.VarChar(255)
-  url            String     @db.VarChar(255)
-  method         String     @db.VarChar(255)
+  name           String        @db.VarChar(255)
+  url            String        @db.VarChar(255)
+  method         String        @db.VarChar(255)
   interval       Int
   expectedStatus Int
-  timeout        Int        @default(30)
-  enabled        Boolean    @default(true)
-  createdAt      DateTime   @default(now()) @db.Timestamp(3)
-  updatedAt      DateTime   @updatedAt @db.Timestamp(3)
-  user           User       @relation(fields: [userId], references: [id])
+  timeout        Int           @default(30000)
+  enabled        Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  body           Json?
+  headers        Json?
+  status         MonitorStatus @default(UNKNOWN)
   checks         Check[]
   incidents      Incident[]
+  user           User          @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
 model Check {
-  id           String   @id @default(uuid())
+  id           String      @id @default(uuid())
   monitorId    String
-  status       String   @db.VarChar(255)
-  statusCode   Int      @db.Integer
+  statusCode   Int?
   responseTime Int
-  error        String   @db.VarChar(255)
-  checkedAt    DateTime @default(now()) @db.Timestamp(3)
-  monitor      Monitor  @relation(fields: [monitorId], references: [id])
+  error        String?     @db.VarChar(255)
+  checkedAt    DateTime    @default(now())
+  status       CheckStatus
+  monitor      Monitor     @relation(fields: [monitorId], references: [id])
 
   @@index([monitorId])
 }
@@ -103,11 +96,26 @@ model Check {
 model Incident {
   id         String   @id @default(uuid())
   monitorId  String
-  startedAt  DateTime @default(now()) @db.Timestamp(3)
-  resolvedAt DateTime @db.Timestamp(3)
-  reason     String   @default("Unknown") @db.VarChar(255)
-  status     String   @default("open") @db.VarChar(255)
+  status     IncidentStatus @default(OPEN)
+  startedAt  DateTime @default(now())
+  resolvedAt DateTime?
   monitor    Monitor  @relation(fields: [monitorId], references: [id])
 
   @@index([monitorId])
+}
+
+enum MonitorStatus {
+  UNKNOWN
+  UP
+  DOWN
+}
+
+enum CheckStatus {
+  SUCCESS
+  FAILED
+}
+
+enum IncidentStatus {
+  OPEN
+  RESOLVED
 }
